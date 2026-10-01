@@ -1,0 +1,140 @@
+{{ define "post" }}
+  {{ template "head" . }}
+  <div class="thread-page">
+    <a class="back-link" href="/">← All discussions</a>
+    <article class="thread">
+      <div class="tags">
+        {{ range .Post.Categories }}<span class="tag">{{ . }}</span>{{ end }}
+      </div>
+      <h1>{{ .Post.Title }}</h1>
+      <div class="post-meta">
+        <span class="avatar">{{ initial .Post.Author }}</span>
+        <span class="author">{{ .Post.Author }}</span>
+        <span class="meta-divider">·</span>
+        <time>{{ date .Post.CreatedAt }}</time>
+      </div>
+      <div class="prose">{{ .Post.Content }}</div>
+      <div class="reaction-row">
+        {{ if .User }}
+          <form class="reactions" method="post" action="/reactions">
+            <input type="hidden" name="csrf" value="{{ .CSRF }}" />
+            <input type="hidden" name="kind" value="post" />
+            <input type="hidden" name="id" value="{{ .Post.ID }}" />
+            <button
+              name="value"
+              value="1"
+              class="reaction {{ if eq .Post.MyReaction 1 }}reacted{{ end }}"
+              aria-pressed="{{ eq .Post.MyReaction 1 }}"
+            >
+              ↑ Like
+              <span>{{ .Post.Likes }}</span>
+            </button>
+            <button
+              name="value"
+              value="-1"
+              class="reaction {{ if eq .Post.MyReaction -1 }}reacted{{ end }}"
+              aria-pressed="{{ eq .Post.MyReaction -1 }}"
+            >
+              ↓ Dislike
+              <span>{{ .Post.Dislikes }}</span>
+            </button>
+            {{ if .Post.MyReaction }}
+              <button class="text-button" name="value" value="0">
+                Remove reaction
+              </button>
+            {{ end }}
+          </form>
+        {{ else }}
+          <span>↑ {{ .Post.Likes }} likes</span>
+          <span>↓ {{ .Post.Dislikes }} dislikes</span>
+          <a href="/login">Sign in to react</a>
+        {{ end }}
+        <span class="muted">{{ .Post.Comments }} replies</span>
+      </div>
+    </article>
+    <section id="comments" class="comments">
+      <div class="section-heading">
+        <h2>Keep the conversation going.</h2>
+        <span class="count">{{ .Post.Comments }}</span>
+      </div>
+      {{ range .Comments }}
+        <article class="comment" id="comment-{{ .ID }}">
+          <div class="post-meta">
+            <span class="avatar small">{{ initial .Author }}</span>
+            <span class="author">{{ .Author }}</span>
+            <time>{{ date .CreatedAt }}</time>
+          </div>
+          <div class="prose">{{ .Content }}</div>
+          {{ if $.User }}
+            <form class="reactions" method="post" action="/reactions">
+              <input type="hidden" name="csrf" value="{{ $.CSRF }}" />
+              <input type="hidden" name="kind" value="comment" />
+              <input type="hidden" name="id" value="{{ .ID }}" />
+              <button
+                class="reaction {{ if eq .MyReaction 1 }}reacted{{ end }}"
+                name="value"
+                value="1"
+                aria-pressed="{{ eq .MyReaction 1 }}"
+              >
+                ↑ Like {{ .Likes }}
+              </button>
+              <button
+                class="reaction {{ if eq .MyReaction -1 }}reacted{{ end }}"
+                name="value"
+                value="-1"
+                aria-pressed="{{ eq .MyReaction -1 }}"
+              >
+                ↓ Dislike {{ .Dislikes }}
+              </button>
+              {{ if .MyReaction }}
+                <button class="text-button" name="value" value="0">
+                  Remove reaction
+                </button>
+              {{ end }}
+            </form>
+          {{ else }}
+            <p class="muted">
+              ↑ {{ .Likes }} likes · ↓ {{ .Dislikes }} dislikes
+            </p>
+          {{ end }}
+        </article>
+      {{ else }}
+        <div class="empty-replies">
+          <p>No replies yet. A fresh perspective is welcome.</p>
+        </div>
+      {{ end }}{{ template "pagination" . }}
+      {{ if .User }}
+        <div class="reply-form">
+          <form action="/posts/{{ .Post.ID }}/comments" method="post">
+            <input type="hidden" name="csrf" value="{{ .CSRF }}" />
+            <label for="reply">Your perspective</label>
+            <textarea
+              id="reply"
+              name="content"
+              required
+              maxlength="5000"
+              rows="5"
+              placeholder="Add something useful to the conversation…"
+            ></textarea>
+            <div class="compose-actions">
+              <span class="fine-print">Up to 5,000 characters.</span>
+              <button class="button" type="submit">
+                Post reply
+                <span aria-hidden="true">↗</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      {{ else }}
+        <div class="join-banner">
+          <div>
+            <h3>Your perspective matters.</h3>
+            <p>Join the hub to reply and react.</p>
+          </div>
+          <a class="button" href="/login">Sign in to join in →</a>
+        </div>
+      {{ end }}
+    </section>
+  </div>
+  {{ template "foot" . }}
+{{ end }}

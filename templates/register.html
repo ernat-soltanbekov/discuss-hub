@@ -1,0 +1,84 @@
+{{ define "register" }}
+  {{ template "head" . }}
+  <div class="auth-layout">
+    <section class="auth-intro">
+      <p class="eyebrow">START WHERE YOU ARE</p>
+      <h1>
+        A little courage.
+        <br />
+        A lot of
+        <em>possibility.</em>
+      </h1>
+      <p>
+        From your first line of Go to a lesson learned on the mat. Your
+        perspective belongs here.
+      </p>
+      <div class="principle">
+        <span>02</span>
+        <p>
+          Bring your questions.
+          <br />
+          Leave room for a new answer.
+        </p>
+      </div>
+    </section>
+    <section class="form-card">
+      <p class="eyebrow">MAKE YOURSELF AT HOME</p>
+      <h2>Join the conversation.</h2>
+      <p class="muted">Create your Discuss Hub account.</p>
+      {{ template "messages" . }}
+      <form method="post" action="/register">
+        <input type="hidden" name="csrf" value="{{ .CSRF }}" />
+        <label for="username">Username</label>
+        <input
+          id="username"
+          name="username"
+          minlength="3"
+          maxlength="32"
+          pattern="[A-Za-z0-9_.\-]{3,32}"
+          autocomplete="username"
+          aria-describedby="username-help"
+          value="{{ .Form.Get "username" }}"
+          required
+        />
+        <p id="username-help" class="field-help">
+          3–32 letters, numbers, underscores, dots or hyphens.
+        </p>
+        <label for="email">Email address</label>
+        <input
+          id="email"
+          type="email"
+          name="email"
+          maxlength="254"
+          autocomplete="email"
+          required
+          value="{{ .Form.Get "email" }}"
+          placeholder="you@example.com"
+        />
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          name="password"
+          minlength="8"
+          maxlength="72"
+          autocomplete="new-password"
+          aria-describedby="password-help"
+          required
+        />
+        <p id="password-help" class="field-help">
+          8–72 bytes. Non-English characters can use more than one byte.
+        </p>
+        <button class="button full-width" type="submit">
+          Create account
+          <span aria-hidden="true">↗</span>
+        </button>
+      </form>
+      <p class="form-foot">
+        Already part of the community?
+        <a href="/login">Sign in</a>
+      </p>
+    </section>
+  </div>
+  {{ template "foot" . }}
+{{ end }}

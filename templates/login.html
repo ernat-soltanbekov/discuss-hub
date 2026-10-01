@@ -1,0 +1,68 @@
+{{ define "login" }}
+  {{ template "head" . }}
+  <div class="auth-layout">
+    <section class="auth-intro">
+      <p class="eyebrow">BACK TO THE PRACTICE</p>
+      <h1>
+        Progress is
+        <br />
+        a
+        <em>shared journey.</em>
+      </h1>
+      <p>
+        Pick up the conversation. Share a discovery. Help someone take their
+        next step.
+      </p>
+      <div class="principle">
+        <span>01</span>
+        <p>
+          Consistency brings us here.
+          <br />
+          Curiosity takes us further.
+        </p>
+      </div>
+    </section>
+    <section class="form-card">
+      <p class="eyebrow">YOUR COMMUNITY AWAITS</p>
+      <h2>Welcome back.</h2>
+      <p class="muted">Sign in to Discuss Hub.</p>
+      {{ template "messages" . }}
+      <form method="post" action="/login">
+        <input type="hidden" name="csrf" value="{{ .CSRF }}" />
+        <label for="email">Email address</label>
+        <input
+          id="email"
+          type="email"
+          name="email"
+          maxlength="254"
+          autocomplete="email"
+          required
+          value="{{ .Form.Get "email" }}"
+          placeholder="you@example.com"
+        />
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          name="password"
+          maxlength="72"
+          autocomplete="current-password"
+          required
+        />
+        <button class="button full-width" type="submit">
+          Sign in
+          <span aria-hidden="true">→</span>
+        </button>
+      </form>
+      <p class="form-foot">
+        New here?
+        <a href="/register">Join the hub</a>
+      </p>
+      <p class="fine-print">
+        For your privacy, signing in here ends your previous session on another
+        browser. Sessions last 24 hours.
+      </p>
+    </section>
+  </div>
+  {{ template "foot" . }}
+{{ end }}

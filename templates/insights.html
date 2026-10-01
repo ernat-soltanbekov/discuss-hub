@@ -1,0 +1,176 @@
+{{ define "insights" }}
+  {{ template "head" . }}
+  <section class="page-heading">
+    <div>
+      <p class="eyebrow">FORUM INSIGHTS · THE COMMUNITY PULSE</p>
+      <h1>
+        Listen. Learn.
+        <br />
+        <em>See the bigger picture.</em>
+      </h1>
+      <p class="page-description">
+        A little perspective on what we’re discussing and how we’re feeling.
+      </p>
+    </div>
+    <a class="button secondary" href="/insights/trending">
+      Explore trending topics ↗
+    </a>
+  </section>
+  <div class="stats-strip">
+    <div>
+      <span class="eyebrow">DISCUSSIONS</span>
+      <strong>{{ .Dashboard.TotalPosts }}</strong>
+    </div>
+    <div>
+      <span class="eyebrow">REPLIES</span>
+      <strong>{{ .Dashboard.TotalComments }}</strong>
+    </div>
+    <div>
+      <span class="eyebrow">COMMUNITY MEMBERS</span>
+      <strong>{{ .Dashboard.TotalUsers }}</strong>
+    </div>
+  </div>
+  <div class="insight-grid">
+    <section class="panel mood-panel">
+      <p class="eyebrow">THE FEELING IN THE ROOM</p>
+      <h2>Overall forum mood</h2>
+      {{ if not .Dashboard.TotalPosts }}
+        <p class="muted">
+          No posts yet. Mood will appear as the conversation grows.
+        </p>
+      {{ end }}
+      <div class="mood-grid">
+        {{ range .Dashboard.Moods }}
+          <div class="mood-item {{ lower .Label }}">
+            <span class="mood-label">{{ .Label }}</span>
+            <strong>
+              {{ percent .Percent }}
+              <small>%</small>
+            </strong>
+            <meter
+              min="0"
+              max="100"
+              value="{{ percent .Percent }}"
+              aria-label="{{ .Label }} posts"
+            >
+              {{ percent .Percent }}%
+            </meter>
+            <span class="fine-print">{{ .Count }} posts</span>
+          </div>
+        {{ end }}
+      </div>
+      <p class="fine-print">
+        Based on keyword matches in post content. Percentages are rounded to one
+        decimal.
+      </p>
+    </section>
+    <section class="panel activity-panel">
+      <p class="eyebrow">SHOWING UP, TOGETHER</p>
+      <div>
+        <span class="muted">Most active category</span>
+        <h3>
+          {{ if .Dashboard.Category.Name }}
+            {{ .Dashboard.Category.Name }}
+          {{ else }}
+            Waiting for the first post
+          {{ end }}
+        </h3>
+        <p>{{ .Dashboard.Category.Posts }} posts</p>
+      </div>
+      <div>
+        <span class="muted">Most active user</span>
+        <h3>
+          {{ if .Dashboard.User.Name }}
+            {{ .Dashboard.User.Name }}
+          {{ else }}
+            It could be you
+          {{ end }}
+        </h3>
+        <p>
+          {{ .Dashboard.User.Posts }} posts ·
+          {{ .Dashboard.User.Comments }}
+          comments
+        </p>
+      </div>
+    </section>
+  </div>
+  <div class="insight-grid bottom-insights">
+    <section class="panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">IDEAS THAT GET A RESPONSE</p>
+          <h2>Top 5 by engagement</h2>
+        </div>
+        <span aria-hidden="true">↗</span>
+      </div>
+      <ol class="ranked-posts">
+        {{ range .Dashboard.Top }}
+          <li>
+            <div>
+              <a href="/posts/{{ .ID }}">{{ .Title }}</a>
+              <small>{{ .Reactions }} reactions · likes + dislikes</small>
+            </div>
+            <span
+              class="sentiment {{ lower .Sentiment.Label }}"
+              title="{{ .Sentiment.Explanation }}"
+            >
+              {{ .Sentiment.Label }}
+            </span>
+          </li>
+        {{ else }}
+          <li class="empty-list">
+            Your community’s most discussed ideas will appear here.
+          </li>
+        {{ end }}
+      </ol>
+    </section>
+    <section class="panel">
+      <p class="eyebrow">BEHIND THE LABELS</p>
+      <h2>Recent post sentiment</h2>
+      <ul class="sentiment-list">
+        {{ range .Dashboard.Recent }}
+          <li>
+            <div>
+              <a href="/posts/{{ .ID }}">{{ .Title }}</a>
+              <small>{{ .Sentiment.Explanation }}</small>
+            </div>
+            <span class="sentiment {{ lower .Sentiment.Label }}">
+              {{ .Sentiment.Label }}
+            </span>
+          </li>
+        {{ else }}
+          <li class="empty-list">The first discussion starts the story.</li>
+        {{ end }}
+      </ul>
+      {{ template "pagination" . }}
+    </section>
+  </div>
+  <details class="method-note">
+    <summary>How these insights work</summary>
+    <p>
+      This is transparent, rule-based analysis over the forum’s own data. Each
+      occurrence of an English keyword counts, regardless of case. Only whole
+      words in post content affect sentiment.
+    </p>
+    <p>
+      <strong>Positive:</strong>
+      great, love, excellent, amazing, helpful, good, thanks, awesome.
+      <br />
+      <strong>Negative:</strong>
+      bad, hate, terrible, awful, horrible, wrong, broken, useless.
+    </p>
+    <p>
+      Score = positive matches − negative matches. Above zero is Positive; below
+      zero is Negative; zero is Neutral. “Not good” is Positive under this
+      simple rule. Sarcasm, context and other languages are not interpreted.
+      Engagement measures reactions, not quality or agreement.
+    </p>
+    <p>
+      All posts contribute to mood. Category counts include each selected
+      category. Activity counts posts and comments, not reactions. Equal
+      activity totals sort by name; equal reaction totals sort newest first.
+      Every recent post can be reached with pagination.
+    </p>
+  </details>
+  {{ template "foot" . }}
+{{ end }}

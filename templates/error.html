@@ -1,0 +1,16 @@
+{{ define "error" }}
+  {{ template "head" . }}
+  <section class="error-page">
+    <span class="error-code">{{ .Status }}</span>
+    <p class="eyebrow">A MOMENT TO REGROUP</p>
+    <h1>{{ .Title }}</h1>
+    <p role="alert">{{ .Error }}</p>
+    <div class="hero-actions">
+      <a class="button" href="/">Back to discussions →</a>
+      {{ if not .User }}
+        <a class="button secondary" href="/login">Sign in</a>
+      {{ end }}
+    </div>
+  </section>
+  {{ template "foot" . }}
+{{ end }}

@@ -1,0 +1,76 @@
+{{ define "new-post" }}
+  {{ template "head" . }}
+  <div class="narrow-page">
+    <a class="back-link" href="/">← Back to discussions</a>
+    <p class="eyebrow">PUT AN IDEA INTO THE WORLD</p>
+    <h1>
+      Start a
+      <em>discussion.</em>
+    </h1>
+    <p class="page-description">
+      A thoughtful question is a good place to begin.
+    </p>
+    <section class="form-card compose-card">
+      {{ template "messages" . }}
+      <form action="/posts" method="post">
+        <input type="hidden" name="csrf" value="{{ .CSRF }}" />
+        <label for="title">Give it a clear title</label>
+        <input
+          id="title"
+          name="title"
+          required
+          maxlength="160"
+          value="{{ .Form.Get "title" }}"
+          placeholder="What would you like to explore?"
+        />
+        <label for="content">Share your thoughts</label>
+        <textarea
+          id="content"
+          name="content"
+          required
+          maxlength="10000"
+          rows="10"
+          placeholder="A question, a discovery, a lesson learned…"
+        >
+{{ .Form.Get "content" }}</textarea>
+        <p class="field-help">
+          Up to 10,000 characters. Plain text; line breaks are preserved.
+        </p>
+        <fieldset>
+          <legend>
+            Choose your circles
+            <span class="muted">· at least one</span>
+          </legend>
+          <div class="category-choices">
+            {{ range .Categories }}
+              <label class="category-choice">
+                <input
+                  type="checkbox"
+                  name="categories"
+                  value="{{ .ID }}"
+                  {{ if selected (index $.Form "categories") .ID }}
+                    checked
+                  {{ end }}
+                />
+                <span>
+                  <strong>{{ .Name }}</strong>
+                  <small>{{ .Description }}</small>
+                </span>
+              </label>
+            {{ end }}
+          </div>
+        </fieldset>
+        <div class="compose-actions">
+          <span class="fine-print">
+            Lead with curiosity. Reply with respect.
+          </span>
+          <button class="button" type="submit">
+            Publish discussion
+            <span aria-hidden="true">↗</span>
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+  {{ template "foot" . }}
+{{ end }}

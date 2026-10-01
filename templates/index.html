@@ -1,0 +1,233 @@
+{{ define "index" }}
+  {{ template "head" . }}
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">
+        <span class="status-dot"></span>
+        A COMMUNITY BUILT ON PRACTICE
+      </p>
+      <h1>
+        Good conversations.
+        <br />
+        <em>Stronger foundations.</em>
+      </h1>
+      <p class="hero-description">
+        A space for curious minds and steady progress. Share what you’re
+        building, ask a better question, and learn something together.
+      </p>
+      <div class="hero-actions">
+        <a
+          class="button"
+          href="{{ if .User }}
+            /posts/new
+          {{ else }}
+            /register
+          {{ end }}"
+        >
+          {{ if .User }}
+            Start a discussion
+          {{ else }}
+            Find your community
+          {{ end }}
+          <span aria-hidden="true">↗</span>
+        </a>
+        <a class="quiet-link" href="/insights">
+          Explore community insights
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+    <aside class="practice-card" aria-label="Our guiding values">
+      <div class="practice-top">
+        <span class="eyebrow">THE DAILY PRACTICE</span>
+        <span class="practice-symbol" aria-hidden="true">✳</span>
+      </div>
+      <p>
+        Show up.
+        <br />
+        Stay curious.
+        <br />
+        <span>Keep building.</span>
+      </p>
+      <div class="practice-bottom">
+        <span class="sunrise" aria-hidden="true">◒</span>
+        <span>
+          A mindset shaped by martial arts.
+          <br />
+          A community moving forward.
+        </span>
+      </div>
+      <span class="practice-year">EST. IN DISCIPLINE · SINCE 2008</span>
+    </aside>
+  </section>
+  <div class="forum-layout">
+    <aside class="sidebar">
+      <div class="sidebar-heading">
+        <h2>Find your circle</h2>
+        <span>05</span>
+      </div>
+      <a
+        class="category-link {{ if eq .Filter.Category 0 }}chosen{{ end }}"
+        href="/?scope={{ .Filter.Scope }}"
+      >
+        <span class="category-icon" aria-hidden="true">◎</span>
+        <span>All discussions</span>
+      </a>
+      {{ range .Categories }}
+        <a
+          class="category-link {{ if eq $.Filter.Category .ID }}chosen{{ end }}"
+          href="/?category={{ .ID }}&amp;scope={{ $.Filter.Scope }}"
+        >
+          <span class="category-icon" aria-hidden="true">
+            {{ if eq .ID 1 }}
+              ⌘
+            {{ else if eq .ID 2 }}
+              ↗
+            {{ else if eq .ID 3 }}
+              ◈
+            {{ else if eq .ID 4 }}
+              ⊞
+            {{ else }}
+              ✳
+            {{ end }}
+          </span>
+          <span>{{ .Name }}</span>
+          <span class="count">{{ .Posts }}</span>
+        </a>
+      {{ end }}
+      <div class="sidebar-note">
+        <span class="eyebrow">A SHARED STANDARD</span>
+        <h3>
+          Respect the person.
+          <br />
+          Explore the idea.
+        </h3>
+        <p>
+          Useful questions, honest experiences and constructive disagreement are
+          always welcome.
+        </p>
+        <a href="/about">
+          Meet the maker
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </aside>
+    <section class="discussion-feed" aria-label="Discussions">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">THE COMMON GROUND</p>
+          <h2>Community discussions</h2>
+        </div>
+        <a class="button secondary small-button" href="/posts/new">
+          <span aria-hidden="true">＋</span>
+          New discussion
+        </a>
+      </div>
+      <form class="filter-bar" action="/" method="get">
+        <label for="scope">Show</label>
+        <select id="scope" name="scope">
+          <option
+            value="all"
+            {{ if or (eq .Filter.Scope "") (eq .Filter.Scope "all") }}
+              selected
+            {{ end }}
+          >
+            All discussions
+          </option>
+          {{ if .User }}
+            <option
+              value="mine"
+              {{ if eq .Filter.Scope "mine" }}selected{{ end }}
+            >
+              My discussions
+            </option>
+            <option
+              value="liked"
+              {{ if eq .Filter.Scope "liked" }}selected{{ end }}
+            >
+              Liked discussions
+            </option>
+          {{ end }}
+        </select>
+        <label class="sr-only" for="category">Category</label>
+        <select id="category" name="category">
+          <option value="0">Every category</option>
+          {{ range .Categories }}
+            <option
+              value="{{ .ID }}"
+              {{ if eq $.Filter.Category .ID }}selected{{ end }}
+            >
+              {{ .Name }}
+            </option>
+          {{ end }}
+        </select>
+        <button class="filter-button" type="submit">Apply filters</button>
+        <span class="feed-order">LATEST FIRST ↓</span>
+      </form>
+      {{ range .Posts }}
+        <article class="post-card">
+          <div class="post-meta">
+            <span class="avatar">{{ initial .Author }}</span>
+            <span class="author">{{ .Author }}</span>
+            <span class="meta-divider">·</span>
+            <time>{{ date .CreatedAt }}</time>
+          </div>
+          <h3><a href="/posts/{{ .ID }}">{{ .Title }}</a></h3>
+          <p class="post-excerpt">{{ excerpt .Content }}</p>
+          <div class="post-bottom">
+            <div class="tags">
+              {{ range .Categories }}<span class="tag">{{ . }}</span>{{ end }}
+            </div>
+            <div class="post-counts">
+              <span aria-label="{{ .Likes }} likes">↑ {{ .Likes }}</span>
+              <span aria-label="{{ .Dislikes }} dislikes">
+                ↓ {{ .Dislikes }}
+              </span>
+              <a
+                href="/posts/{{ .ID }}#comments"
+                aria-label="{{ .Comments }} replies"
+              >
+                <span aria-hidden="true">◷</span>
+                {{ .Comments }} replies
+              </a>
+            </div>
+          </div>
+        </article>
+      {{ else }}
+        <div class="empty-state">
+          <span class="empty-symbol" aria-hidden="true">↗</span>
+          <p class="eyebrow">THERE’S ROOM FOR YOUR VOICE</p>
+          <h3>
+            {{ if or .Filter.Category (eq .Filter.Scope "mine") (eq .Filter.Scope "liked") }}
+              No discussions in this view yet.
+            {{ else }}
+              Every community starts
+              <br />
+              with one conversation.
+            {{ end }}
+          </h3>
+          <p>
+            Share a question, a lesson from practice, or something you’re
+            building.
+          </p>
+          <a
+            class="button"
+            href="{{ if .User }}
+              /posts/new
+            {{ else }}
+              /register
+            {{ end }}"
+          >
+            Start something good
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      {{ end }}{{ template "pagination" . }}
+      <p class="feed-footnote">
+        <span class="status-dot"></span>
+        Thoughtful conversations. One step at a time.
+      </p>
+    </section>
+  </div>
+  {{ template "foot" . }}
+{{ end }}

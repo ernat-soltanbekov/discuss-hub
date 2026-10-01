@@ -1,0 +1,42 @@
+{{ define "trending" }}
+  {{ template "head" . }}
+  <div class="narrow-page">
+    <a class="back-link" href="/insights">← Community insights</a>
+    <p class="eyebrow">TRENDING TOPICS · LAST 24 HOURS</p>
+    <h1>
+      What’s on
+      <br />
+      <em>our minds?</em>
+    </h1>
+    <p class="page-description">
+      The ten most mentioned words in recent discussion titles and messages.
+    </p>
+    <section class="panel trending-panel">
+      <ol class="topic-list">
+        {{ range .Topics }}
+          <li>
+            <span class="topic-word">{{ .Word }}</span>
+            <span class="topic-count">
+              {{ .Count }}
+              <small>mentions</small>
+            </span>
+          </li>
+        {{ else }}
+          <li class="empty-list">
+            No topics in the last 24 hours. Start a discussion and check back
+            here.
+          </li>
+        {{ end }}
+      </ol>
+    </section>
+    <p class="fine-print">
+      A rolling 24-hour window. Common English stop words are removed;
+      punctuation and case are normalized. Repeated words count separately. Ties
+      sort alphabetically.
+    </p>
+    <a class="quiet-link" href="/insights/trending?format=json">
+      View the data as JSON →
+    </a>
+  </div>
+  {{ template "foot" . }}
+{{ end }}
