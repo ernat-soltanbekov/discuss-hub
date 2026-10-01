@@ -1,0 +1,9 @@
+.git
+.github
+*.db
+*.db-*
+data
+bin
+coverage.out
+.env
+.DS_Store

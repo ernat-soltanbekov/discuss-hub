@@ -1,0 +1,36 @@
+name: Audit
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.27.1"
+          cache: true
+      - name: Formatting
+        run: test -z "$(gofmt -l .)"
+      - name: Verify modules
+        run: go mod verify
+      - name: Build
+        run: go build -trimpath ./cmd/server
+      - name: Static analysis
+        run: go vet ./...
+      - name: Unit, integration, concurrency and fault tests
+        run: go test -race -count=1 ./...
+      - name: Real HTTP process and persisted restart
+        run: python3 scripts/live-smoke.py
+      - name: Fuzz sentiment rules
+        run: go test ./internal/insights -run '^$' -fuzz FuzzSentimentInvariant -fuzztime 10s -parallel 2
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build, run and verify persistent non-root container
+        run: sh scripts/container-smoke.sh
