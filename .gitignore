@@ -1,0 +1,15 @@
+# Local state must never become a GitHub user database.
+*.db
+*.db-shm
+*.db-wal
+*.sqlite*
+data/
+bin/
+coverage.out
+.env
+.DS_Store
+*.test
+
+/server
+backups/
+__pycache__/
